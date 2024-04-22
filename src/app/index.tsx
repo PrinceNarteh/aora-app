@@ -1,4 +1,7 @@
-import { images } from "@/constants";
+import CustomButton from "@/components/CustomButton";
+import { colors, images } from "@/constants";
+import { router } from "expo-router";
+import { StatusBar } from "expo-status-bar";
 import React from "react";
 import { Image, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -34,8 +37,14 @@ const App = () => {
             Where creativity meets innovation: embark on a journey of limitless
             exploration with Aora
           </Text>
+          <CustomButton
+            label="Continue with Email"
+            onPress={() => router.push("/sign-in")}
+            containerStyles="w-full mt-7"
+          />
         </View>
       </ScrollView>
+      <StatusBar backgroundColor={colors.primary} style="light" />
     </SafeAreaView>
   );
 };

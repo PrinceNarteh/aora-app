@@ -4,12 +4,12 @@
     "strict": true,
     "baseUrl": ".",
     "paths": {
+      "@assets/*": ["assets/*"],
+      "@/*": ["src/*"],
       "@app/*": ["src/app/*"],
       "@components/*": ["src/components/*"],
       "@constants/*": ["src/constants/*"],
-      "@utils/*": ["src/utils/*"],
-      "@assets/*": ["ssets/*"],
-      "@/*": ["src/*"]
+      "@utils/*": ["src/utils/*"]
     }
   },
   "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"]

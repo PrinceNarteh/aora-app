@@ -1,50 +1,65 @@
 import { icons } from "@/constants";
 import React, { useState } from "react";
 import {
+  UseControllerProps,
+  useController,
+  useFormContext,
+} from "react-hook-form";
+import {
   Image,
-  KeyboardType,
   Text,
   TextInput,
+  TextInputProps,
   TouchableOpacity,
   View,
 } from "react-native";
 
-interface TextFieldProps {
-  title: string;
-  value?: string;
+interface TextFieldProps extends TextInputProps, UseControllerProps {
+  label?: string;
   placeholder?: string;
-  keyboardType?: KeyboardType | undefined;
+  defaultValue?: string;
   otherStyles?: string;
-  onChangeText?: ((text: string) => void) | undefined;
 }
 
 const TextField = ({
-  keyboardType,
-  title,
-  value,
+  name,
+  defaultValue,
+  rules,
+  label,
   placeholder,
   otherStyles,
-  onChangeText,
+  ...inputProps
 }: TextFieldProps) => {
   const [showPassword, setShowPassword] = useState(false);
+  const { field } = useController({ name, rules, defaultValue });
+  const formContext = useFormContext();
+  const { formState } = formContext;
+
+  if (!formContext || !name) {
+    const msg = !formContext
+      ? "TextInput must be wrapped by the FormProvider"
+      : "Name must be defined";
+    console.error(msg);
+    return null;
+  }
+
   return (
     <View className={`space-y-2 ${otherStyles}`}>
-      <Text className="text-gray-100 font-poppins-medium text-base">
-        {title}
-      </Text>
+      {Boolean(label) && (
+        <Text className="text-gray-100 font-poppins-medium text-base">
+          {label}
+        </Text>
+      )}
 
       <View className="w-full h-16 bg-black-100 px-4 rounded-2xl border-2 focus:border-secondary items-center flex-row">
         <TextInput
-          value={value}
+          value={field.value}
           placeholder={placeholder}
-          keyboardType={keyboardType}
-          onChangeText={onChangeText}
           placeholderTextColor="#7B7B8B"
-          secureTextEntry={title.toLowerCase() === "password" && !showPassword}
           className="flex-1 text-white font-poppins-semibold text-base"
+          secureTextEntry={label?.toLowerCase() === "password" && !showPassword}
         />
-
-        {title.toLowerCase() === "password" && (
+        {label?.toLowerCase() === "password" && (
           <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
             <Image
               source={!showPassword ? icons.eye : icons.eyeHide}

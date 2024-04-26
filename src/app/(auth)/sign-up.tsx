@@ -22,11 +22,14 @@ const SignUp = () => {
   });
 
   const handleSubmit = async () => {
-    await createUser({
-      username: "Sample Name",
-      email: "sample@email.com",
-      password: "Secret@1234"
-    })
+    setSubmitting(true)
+    try {
+      await createUser(form)
+    } catch (error: any) {
+      throw new Error(error)
+    } finally {
+      setSubmitting(false)
+    }
   };
 
   return (
@@ -47,7 +50,7 @@ const SignUp = () => {
             value={form.username}
             otherStyles="mt-10"
             keyboardType="email-address"
-            onChangeText={(e) => setForm({ ...form, email: e })}
+            onChangeText={(e) => setForm({ ...form, username: e })}
           />
 
           <TextField

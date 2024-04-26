@@ -1,30 +1,67 @@
-import { Client, Account, ID } from "react-native-appwrite"
+import { Client, Account, Avatars, Databases, ID } from "react-native-appwrite"
 
 export const config = {
-  endpoint: process.env.EXPO_PUBLIC_API_URL || "", 
+  endpoint: process.env.EXPO_PUBLIC_API_URL || '',
   platform: process.env.EXPO_PUBLIC_PLATFORM || "",
-  projectId: process.env.EXPO_PUBLIC_PROJECT_ID || ""
+  projectId: process.env.EXPO_PUBLIC_PROJECT_ID || "",
+  databaseId: process.env.EXPO_PUBLIC_DATABASE_ID || "",
+  userCollectionId: process.env.EXPO_PUBLIC_USER_COLLECTION_ID || "",
+  videoCollectionId: process.env.EXPO_PUBLIC_VIDEO_COLLECTION_ID || ""
 }
 
 const client = new Client()
-const account = new Account(client)
 
 
 client.setEndpoint("https://cloud.appwrite.io/v1")
   .setProject(config.projectId)
   .setPlatform(config.platform)
 
-interface  CreateUser {
+const account = new Account(client)
+const avatars = new Avatars(client)
+const databases = new Databases(client)
+
+
+interface CreateUser {
   email: string;
   username: string;
   password: string;
 }
 
+
 export const createUser = async ({ email, username, password }: CreateUser) => {
-  account.create(ID.unique(), email, password, username)
-    .then(function (response) {
-        console.log(response);
-    }, function (error) {
-        console.log(error);
-    });
+  try {
+    const newAccount = await account.create(ID.unique(), email, password, username);
+
+    if (!newAccount) throw new Error;
+
+    const avatar = avatars.getInitials(username)
+
+    await signIn({ email, password })
+
+    const newUser = await databases.createDocument(
+      config.databaseId,
+      config.userCollectionId,
+      ID.unique(),
+      {
+        accountId: newAccount.$id,
+        email,
+        username,
+        avatar
+      }
+    )
+
+    return newUser
+
+  } catch (error: any) {
+    throw new error(error)
+  }
+}
+
+export async function signIn({ email, password }: { email: string, password: string }) {
+  try {
+    const session = await account.createEmailSession(email, password)
+    return session
+  } catch (error: any) {
+    throw new Error(error)
+  }
 }

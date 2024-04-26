@@ -1,19 +1,19 @@
-import { View, Text, ScrollView, Image } from "react-native";
-import React, { useState } from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { images } from "@/constants";
-import TextField from "@/components/TextField";
 import CustomButton from "@/components/CustomButton";
-import { Link } from "expo-router";
+import TextField from "@/components/TextField";
+import { images } from "@/constants";
 import { createUser } from "@/lib/appwrite";
-import { FormProvider, useForm, SubmitHandler } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Link } from "expo-router";
+import React, { useState } from "react";
+import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
+import { Image, ScrollView, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { z } from "zod";
 
 const schema = z.object({
   username: z.string().min(2, "Username to short"),
   email: z.string().email(),
-  password: z.string().min(8),
+  password: z.string().min(8, "Password must contain at least 8 characters"),
 });
 
 type FormData = {
@@ -72,12 +72,7 @@ const SignUp = () => {
               keyboardType="email-address"
             />
 
-            <TextField
-              label="Password"
-              name="password"
-              otherStyles="mt-5"
-              keyboardType="email-address"
-            />
+            <TextField label="Password" name="password" otherStyles="mt-5" />
           </FormProvider>
 
           <CustomButton

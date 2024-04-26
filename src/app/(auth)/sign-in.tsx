@@ -5,15 +5,30 @@ import { images } from "@/constants";
 import TextField from "@/components/TextField";
 import CustomButton from "@/components/CustomButton";
 import { Link } from "expo-router";
+import { z } from "zod";
+import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+const schema = z.object({
+  email: z.string().min(1, "Email is required").email(),
+  password: z.string().min(8, "Password must contain at least 8 characters"),
+});
+
+type FormData = {
+  email: string;
+  password: string;
+};
 
 const SignIn = () => {
   const [isSubmitting, setSubmitting] = useState(false);
-  const [form, setForm] = useState<{ email: string; password: string }>({
-    email: "",
-    password: "",
+  const { ...methods } = useForm<FormData>({
+    defaultValues: { email: "", password: "" },
+    resolver: zodResolver(schema),
   });
 
-  const handleSubmit = () => {};
+  const onSubmit: SubmitHandler<FormData> = (data) => {
+    console.log(data);
+  };
 
   return (
     <SafeAreaView className="bg-primary h-full">
@@ -28,26 +43,21 @@ const SignIn = () => {
             Log in to Aora
           </Text>
 
-          <TextField
-            title="Email"
-            value={form.email}
-            otherStyles="mt-5"
-            keyboardType="email-address"
-            onChangeText={(e) => setForm({ ...form, email: e })}
-          />
-          <TextField
-            title="Password"
-            value={form.password}
-            otherStyles="mt-5"
-            keyboardType="email-address"
-            onChangeText={(e) => setForm({ ...form, password: e })}
-          />
+          <FormProvider {...methods}>
+            <TextField
+              label="Email"
+              name="email"
+              otherStyles="mt-5"
+              keyboardType="email-address"
+            />
+            <TextField label="Password" name="password" otherStyles="mt-5" />
+          </FormProvider>
 
           <CustomButton
             containerStyles="mt-7"
             label="Sign In"
             isLoading={isSubmitting}
-            onPress={handleSubmit}
+            onPress={methods.handleSubmit(onSubmit)}
           />
 
           <View className="flex-row justify-center gap-2 pt-5">

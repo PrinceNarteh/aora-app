@@ -46,9 +46,9 @@ const TextField = ({
   }
 
   return (
-    <View className={`space-y-2 ${otherStyles}`}>
+    <View className={`${otherStyles}`}>
       {Boolean(label) && (
-        <Text className="text-gray-100 font-poppins-medium text-base">
+        <Text className="text-gray-100 font-poppins-medium text-base mb-2">
           {label}
         </Text>
       )}
@@ -56,10 +56,13 @@ const TextField = ({
       <View className="w-full h-16 bg-black-100 px-4 rounded-2xl border-2 focus:border-secondary items-center flex-row">
         <TextInput
           value={field.value}
+          onBlur={field.onBlur}
           placeholder={placeholder}
+          onChangeText={field.onChange}
           placeholderTextColor="#7B7B8B"
-          className="flex-1 text-white font-poppins-semibold text-base"
           secureTextEntry={label?.toLowerCase() === "password" && !showPassword}
+          {...inputProps}
+          className="flex-1 text-white font-poppins-semibold text-base"
         />
         {label?.toLowerCase() === "password" && (
           <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
@@ -71,7 +74,9 @@ const TextField = ({
         )}
       </View>
       {errors[name]?.message && (
-        <Text className="text-xs">{errors[name]?.message as string}</Text>
+        <Text className="text-sm text-red-500 pl-2 font-poppins-regular mt-0.5 italic">
+          {errors[name]?.message as string}
+        </Text>
       )}
     </View>
   );

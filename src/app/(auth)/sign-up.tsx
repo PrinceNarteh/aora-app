@@ -5,6 +5,7 @@ import { images } from "@/constants";
 import TextField from "@/components/TextField";
 import CustomButton from "@/components/CustomButton";
 import { Link } from "expo-router";
+import { createUser } from "@/lib/appwrite";
 
 interface FormData {
   username: string;
@@ -20,7 +21,13 @@ const SignUp = () => {
     password: "",
   });
 
-  const handleSubmit = () => {};
+  const handleSubmit = async () => {
+    await createUser({
+      username: "Sample Name",
+      email: "sample@email.com",
+      password: "Secret@1234"
+    })
+  };
 
   return (
     <SafeAreaView className="bg-primary h-full">

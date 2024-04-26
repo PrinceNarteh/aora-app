@@ -33,7 +33,9 @@ const TextField = ({
   const [showPassword, setShowPassword] = useState(false);
   const { field } = useController({ name, rules, defaultValue });
   const formContext = useFormContext();
-  const { formState } = formContext;
+  const {
+    formState: { errors },
+  } = formContext;
 
   if (!formContext || !name) {
     const msg = !formContext
@@ -68,6 +70,9 @@ const TextField = ({
           </TouchableOpacity>
         )}
       </View>
+      {errors[name]?.message && (
+        <Text className="text-xs">{errors[name]?.message as string}</Text>
+      )}
     </View>
   );
 };

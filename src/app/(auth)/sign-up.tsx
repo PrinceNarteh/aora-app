@@ -6,29 +6,41 @@ import TextField from "@/components/TextField";
 import CustomButton from "@/components/CustomButton";
 import { Link } from "expo-router";
 import { createUser } from "@/lib/appwrite";
+import { FormProvider, useForm, SubmitHandler } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-interface FormData {
+const schema = z.object({
+  username: z.string().min(2, "Username to short"),
+  email: z.string().email(),
+  password: z.string().min(8),
+});
+
+type FormData = {
   username: string;
   email: string;
   password: string;
-}
+};
 
 const SignUp = () => {
   const [isSubmitting, setSubmitting] = useState(false);
-  const [form, setForm] = useState<FormData>({
-    username: "",
-    email: "",
-    password: "",
+  const { ...methods } = useForm<FormData>({
+    defaultValues: {
+      username: "",
+      email: "",
+      password: "",
+    },
+    resolver: zodResolver(schema),
   });
 
-  const handleSubmit = async () => {
-    setSubmitting(true)
+  const onSubmit: SubmitHandler<FormData> = async (data) => {
+    setSubmitting(true);
     try {
-      await createUser(form)
+      await createUser(data);
     } catch (error: any) {
-      throw new Error(error)
+      throw new Error(error);
     } finally {
-      setSubmitting(false)
+      setSubmitting(false);
     }
   };
 
@@ -45,34 +57,34 @@ const SignUp = () => {
             Sign Up to Aora
           </Text>
 
-          <TextField
-            title="Username"
-            value={form.username}
-            otherStyles="mt-10"
-            keyboardType="email-address"
-            onChangeText={(e) => setForm({ ...form, username: e })}
-          />
+          <FormProvider {...methods}>
+            <TextField
+              label="Username"
+              name="username"
+              otherStyles="mt-10"
+              keyboardType="email-address"
+            />
 
-          <TextField
-            title="Email"
-            value={form.email}
-            otherStyles="mt-5"
-            keyboardType="email-address"
-            onChangeText={(e) => setForm({ ...form, email: e })}
-          />
+            <TextField
+              label="Email"
+              name="email"
+              otherStyles="mt-5"
+              keyboardType="email-address"
+            />
 
-          <TextField
-            title="Password"
-            value={form.password}
-            otherStyles="mt-5"
-            keyboardType="email-address"
-            onChangeText={(e) => setForm({ ...form, password: e })}
-          />
+            <TextField
+              label="Password"
+              name="password"
+              otherStyles="mt-5"
+              keyboardType="email-address"
+            />
+          </FormProvider>
+
           <CustomButton
             containerStyles="mt-7"
             label="Sign Up"
             isLoading={isSubmitting}
-            onPress={handleSubmit}
+            onPress={methods.handleSubmit(onSubmit)}
           />
           <View className="flex-row justify-center gap-2 pt-5">
             <Text className="text-lg text-gray-100 font-poppins-regular">

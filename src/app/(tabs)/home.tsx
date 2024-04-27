@@ -4,6 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useGlobalContext } from "context/GlobalProvider";
 import { StatusBar } from "expo-status-bar";
 import { images } from "@/constants";
+import SearchInput from "@/components/SearchInput";
 
 const Home = () => {
   const { user } = useGlobalContext();
@@ -33,6 +34,7 @@ const Home = () => {
                 />
               </View>
             </View>
+            <SearchInput onChangeText={() => {}} />
           </View>
         )}
       />

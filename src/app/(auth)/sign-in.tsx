@@ -1,13 +1,15 @@
-import { View, Text, ScrollView, Image } from "react-native";
-import React, { useState } from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { images } from "@/constants";
-import TextField from "@/components/TextField";
 import CustomButton from "@/components/CustomButton";
-import { Link } from "expo-router";
-import { z } from "zod";
-import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
+import TextField from "@/components/TextField";
+import { images } from "@/constants";
+import { getCurrentUser, signIn } from "@/lib/appwrite";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useGlobalContext } from "context/GlobalProvider";
+import { Link, router } from "expo-router";
+import React, { useState } from "react";
+import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
+import { Alert, Image, ScrollView, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { z } from "zod";
 
 const schema = z.object({
   email: z.string().min(1, "Email is required").email(),
@@ -20,14 +22,28 @@ type FormData = {
 };
 
 const SignIn = () => {
+  const { setUser, setIsLoggedIn } = useGlobalContext();
   const [isSubmitting, setSubmitting] = useState(false);
   const { ...methods } = useForm<FormData>({
     defaultValues: { email: "", password: "" },
     resolver: zodResolver(schema),
   });
 
-  const onSubmit: SubmitHandler<FormData> = (data) => {
-    console.log(data);
+  const onSubmit: SubmitHandler<FormData> = async (data) => {
+    setSubmitting(true);
+    try {
+      await signIn(data);
+      const res = await getCurrentUser();
+      setUser(res);
+      setIsLoggedIn(true);
+
+      Alert.alert("Success", "User signed in successfully");
+      router.replace("/(tabs)/home");
+    } catch (error: any) {
+      Alert.alert("Error", error.message.replace("AppwriteException: ", ""));
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (

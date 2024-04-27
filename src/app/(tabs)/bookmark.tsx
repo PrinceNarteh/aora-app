@@ -3,7 +3,7 @@ import React from "react";
 
 const Bookmark = () => {
   return (
-    <View>
+    <View className="flex-1 justify-center items-center">
       <Text>Bookmark</Text>
     </View>
   );

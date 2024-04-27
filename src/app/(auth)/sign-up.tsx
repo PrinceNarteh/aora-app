@@ -3,10 +3,11 @@ import TextField from "@/components/TextField";
 import { images } from "@/constants";
 import { createUser } from "@/lib/appwrite";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Link } from "expo-router";
+import { useGlobalContext } from "context/GlobalProvider";
+import { Link, router } from "expo-router";
 import React, { useState } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
-import { Image, ScrollView, Text, View } from "react-native";
+import { Alert, Image, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { z } from "zod";
 
@@ -24,6 +25,7 @@ type FormData = {
 
 const SignUp = () => {
   const [isSubmitting, setSubmitting] = useState(false);
+  const { setUser, setIsLoggedIn } = useGlobalContext();
   const { ...methods } = useForm<FormData>({
     defaultValues: {
       username: "",
@@ -36,9 +38,13 @@ const SignUp = () => {
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     setSubmitting(true);
     try {
-      await createUser(data);
+      const res = await createUser(data);
+      setUser(res);
+      setIsLoggedIn(true);
+
+      router.replace("/home");
     } catch (error: any) {
-      throw new Error(error);
+      Alert.alert("Error", error.message.replace("AppwriteException: ", ""));
     } finally {
       setSubmitting(false);
     }
